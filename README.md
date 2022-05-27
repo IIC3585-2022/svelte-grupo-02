@@ -1,14 +1,14 @@
 # Tarea Svelte - Grupo 02
 Aplicación de video chat hecha con Web Sockets y WebRTC.
 
-Para ejecutarla, primero instalar las dependencias de _client_ y _server_:
+Para ejecutarla, primero instala las dependencias de _client_ y _server_:
 ```bash
 cd server
 yarn install
 cd ../client
 yarn install
 ```
-Luego, en _client_, hacer un archivo **.env** y agregar las variables necesarias:
+Luego, en _client_, crea un archivo **.env** y agrega las variables necesarias:
 ```bash
 cp .env.example .env
 ```
