@@ -9,24 +9,20 @@
   let calls = [];
 
   onMount(() => {
-    if (!$username) {
-      push('/');
-    } else {
-      socket.emit('request-calls');
-      socket.on('calls-sent', ({ calls: previousCalls }) => {
-        calls = previousCalls;
-      });
-      socket.on('call-joined', (call) => {
-        setCallInformation(call);
-        push(`/calls/${call.id}`);
-      });
-      socket.on('call-created', (call) => {
-        calls = [...calls, call];
-      });
-      socket.on('call-filled', ({ id }) => {
-        calls = calls.filter((call) => call.id !== id);
-      });
-    }
+    socket.emit('request-calls');
+    socket.on('calls-sent', ({ calls: previousCalls }) => {
+      calls = previousCalls;
+    });
+    socket.on('call-joined', (call) => {
+      setCallInformation(call);
+      push(`/calls/${call.id}`);
+    });
+    socket.on('call-created', (call) => {
+      calls = [...calls, call];
+    });
+    socket.on('call-filled', ({ id }) => {
+      calls = calls.filter((call) => call.id !== id);
+    });
   });
 
   onDestroy(() => {
