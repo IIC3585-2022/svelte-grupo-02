@@ -2,15 +2,128 @@
   import { SyncLoader } from 'svelte-loading-spinners';
   import { onMount, onDestroy } from 'svelte';
   import socket from '../services/socket';
-  import { callee, setCallInformation } from '../stores/call';
+  import { username } from '../stores/session';
+  import { id, caller, callee, setCallInformation } from '../stores/call';
 
-  const ready = false;
+  let ready = false;
+  let localVideo;
+  let remoteVideo;
+
+  const servers = {
+    iceServers: [
+      {
+        urls: [
+          'stun:stun1.l.google.com:19302',
+          'stun:stun2.l.google.com:19302',
+        ],
+      },
+    ],
+    iceCandidatePoolSize: 10,
+  };
+
+  let pc = new RTCPeerConnection(servers);
+  let localStream = null;
+  let remoteStream = null;
 
   onMount(async () => {
-    socket.on('call-joined', setCallInformation);
+    socket.on('call-joined', (call) => {
+      setCallInformation(call);
+      socket.emit('begin-call', { id: $id });
+    });
+    socket.on('call-began', async () => {
+      localStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      remoteStream = new MediaStream();
+
+      localStream.getTracks().forEach((track) => {
+        pc.addTrack(track, localStream);
+      });
+
+      pc.ontrack = (event) => {
+        event.streams[0].getTracks().forEach((track) => {
+          remoteStream.addTrack(track);
+        });
+      };
+
+      localVideo.srcObject = localStream;
+      remoteVideo.srcObject = remoteStream;
+
+      localVideo.play();
+      remoteVideo.play();
+
+      ready = true;
+    });
+    socket.on('offer-sent', async ({ offer }) => {
+      await pc.setRemoteDescription(new RTCSessionDescription(offer));
+      const answerDescription = await pc.createAnswer();
+      await pc.setLocalDescription(answerDescription);
+      const { sdp, type } = answerDescription;
+      const answer = {
+        type,
+        sdp,
+      };
+      socket.emit('create-answer', { id: $id, answer });
+    });
+    socket.on('answer-sent', async ({ answer }) => {
+      await pc.setRemoteDescription(new RTCSessionDescription(answer));
+    });
+    socket.on('offer-candidate-sent', ({ candidate }) => {
+      pc.addIceCandidate(new RTCIceCandidate(candidate));
+    });
+    socket.on('answer-candidate-sent', ({ candidate }) => {
+      pc.addIceCandidate(new RTCIceCandidate(candidate));
+    });
   });
 
+  $: {
+    if (ready && $username === $caller) {
+      (async () => {
+        pc.onicecandidate = (event) => {
+          event.candidate &&
+            socket.emit('send-offer-candidate', {
+              id: $id,
+              candidate: event.candidate.toJSON(),
+            });
+        };
+
+        const offerDescription = await pc.createOffer();
+        await pc.setLocalDescription(offerDescription);
+
+        const { sdp, type } = offerDescription;
+
+        const offer = {
+          sdp,
+          type,
+        };
+
+        socket.emit('create-offer', { id: $id, offer });
+      })();
+    }
+  }
+
+  $: {
+    if (ready && $username === $callee) {
+      pc.onicecandidate = (event) => {
+        event.candidate &&
+          socket.emit('send-answer-candidate', {
+            id: $id,
+            candidate: event.candidate.toJSON(),
+          });
+      };
+    }
+  }
+
   onDestroy(() => {
+    localVideo.pause();
+    localVideo.src = '';
+    localVideo.srcObject = '';
+    localStream.getTracks()[0].stop();
+    remoteVideo.pause();
+    remoteVideo.src = '';
+    remoteVideo.srcObject = '';
+    remoteStream.getTracks()[0].stop();
     socket.removeAllListeners();
     setCallInformation({});
   });
@@ -27,9 +140,24 @@
     {/if}
     <SyncLoader />
   {/if}
+  <div class="columns is-5">
+    <div class="column is-1/2">
+      <video bind:this={localVideo} />
+    </div>
+    <div class="column is-1/2">
+      <video bind:this={remoteVideo} />
+    </div>
+  </div>
 </div>
 
 <style>
+  video {
+    width: 100%;
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+    -moz-transform: rotateY(180deg); /* Firefox */
+  }
+
   .is-full {
     width: 100%;
     height: 100%;
