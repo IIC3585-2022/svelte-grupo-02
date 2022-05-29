@@ -41,9 +41,13 @@
       Crear llamada
     </button>
   </div>
-  <div class="columns my-2 is-mobile is-multiline">
-    {#each calls as { id, caller } (id)}
-      <CallCard {id} {caller} />
-    {/each}
-  </div>
+  {#if calls.length > 0}
+    <div class="columns my-2 is-mobile is-multiline">
+      {#each calls as { id, caller } (id)}
+        <CallCard {id} {caller} />
+      {/each}
+    </div>
+  {:else}
+    <p class="is-size-5">No hay llamadas disponibles</p>
+  {/if}
 </div>
