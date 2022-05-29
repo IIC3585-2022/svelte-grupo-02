@@ -49,6 +49,7 @@
 
       localVideo.srcObject = localStream;
       remoteVideo.srcObject = remoteStream;
+      localVideo.muted = true;
 
       localVideo.play();
       remoteVideo.play();
