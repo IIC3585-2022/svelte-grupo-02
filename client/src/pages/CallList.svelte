@@ -44,7 +44,10 @@
   {#if calls.length > 0}
     <div class="columns my-2 is-mobile is-multiline">
       {#each calls as { id, caller } (id)}
-        <CallCard {id} {caller} />
+        <CallCard
+          {caller}
+          on:click={() => socket.emit('join-call', { id, username: $username })}
+        />
       {/each}
     </div>
   {:else}

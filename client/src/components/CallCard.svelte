@@ -1,9 +1,7 @@
 <script>
-  import socket from '../services/socket';
   import api from '../services/api';
   import { username } from '../stores/session';
 
-  export let id;
   export let caller;
 
   const promise = api.get('/calculate', {
@@ -27,12 +25,7 @@
           No ha sido posible calcular su compatibilidad
         {/await}
       </p>
-      <button
-        class="button is-success mt-2"
-        on:click={() => socket.emit('join-call', { id, username: $username })}
-      >
-        Unirse
-      </button>
+      <button class="button is-success mt-2" on:click> Unirse </button>
     </div>
   </div>
 </div>
