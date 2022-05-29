@@ -145,7 +145,7 @@
     {:else}
       <p class="is-size-2">Esperando a que empiece la llamada</p>
     {/if}
-    <SyncLoader />
+    <SyncLoader color="#23d160" />
   {/if}
   <div class="columns is-5">
     <div class="column is-1/2">
