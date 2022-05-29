@@ -175,7 +175,7 @@
   }
 
   .is-full {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    min-height: 100vh;
   }
 </style>

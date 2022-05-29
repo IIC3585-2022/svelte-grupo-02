@@ -34,7 +34,7 @@
 
 <style>
   .h-full {
-    height: 100vh;
+    min-height: 100vh;
   }
 
   .w-80 {
