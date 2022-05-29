@@ -22,7 +22,6 @@
   };
 
   const handleConditionsFailed = (event) => {
-    console.log(event.detail);
     const { route } = event.detail;
     if (route === '/calls') {
       replace('/');

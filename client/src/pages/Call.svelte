@@ -22,7 +22,7 @@
     iceCandidatePoolSize: 10,
   };
 
-  let pc = new RTCPeerConnection(servers);
+  const pc = new RTCPeerConnection(servers);
   let localStream = null;
   let remoteStream = null;
 
@@ -94,11 +94,12 @@
     if (ready && $username === $caller) {
       (async () => {
         pc.onicecandidate = (event) => {
-          event.candidate &&
+          if (event.candidate) {
             socket.emit('send-offer-candidate', {
               id: $id,
               candidate: event.candidate.toJSON(),
             });
+          }
         };
 
         const offerDescription = await pc.createOffer();
@@ -119,11 +120,12 @@
   $: {
     if (ready && $username === $callee) {
       pc.onicecandidate = (event) => {
-        event.candidate &&
+        if (event.candidate) {
           socket.emit('send-answer-candidate', {
             id: $id,
             candidate: event.candidate.toJSON(),
           });
+        }
       };
     }
   }
@@ -147,9 +149,11 @@
   {/if}
   <div class="columns is-5">
     <div class="column is-1/2">
+      <!-- svelte-ignore a11y-media-has-caption -->
       <video bind:this={localVideo} />
     </div>
     <div class="column is-1/2">
+      <!-- svelte-ignore a11y-media-has-caption -->
       <video bind:this={remoteVideo} />
     </div>
   </div>
