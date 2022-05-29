@@ -1,5 +1,6 @@
 <script>
   import { SyncLoader } from 'svelte-loading-spinners';
+  import { push } from 'svelte-spa-router';
   import { onMount, onDestroy } from 'svelte';
   import socket from '../services/socket';
   import { username } from '../stores/session';
@@ -76,6 +77,17 @@
     socket.on('answer-candidate-sent', ({ candidate }) => {
       pc.addIceCandidate(new RTCIceCandidate(candidate));
     });
+    socket.on('call-ended', () => {
+      localVideo.pause();
+      localVideo.src = null;
+      localVideo.srcObject = null;
+      localStream.getTracks().forEach((track) => track.stop());
+      remoteVideo.pause();
+      remoteVideo.src = null;
+      remoteVideo.srcObject = null;
+      remoteStream.getTracks().forEach((track) => track.stop());
+      push('/calls');
+    });
   });
 
   $: {
@@ -117,16 +129,8 @@
   }
 
   onDestroy(() => {
-    localVideo.pause();
-    localVideo.src = '';
-    localVideo.srcObject = '';
-    localStream.getTracks()[0].stop();
-    remoteVideo.pause();
-    remoteVideo.src = '';
-    remoteVideo.srcObject = '';
-    remoteStream.getTracks()[0].stop();
-    socket.removeAllListeners();
     setCallInformation({});
+    socket.removeAllListeners();
   });
 </script>
 
@@ -149,6 +153,12 @@
       <video bind:this={remoteVideo} />
     </div>
   </div>
+  {#if ready}
+    <button
+      class="button is-danger"
+      on:click={() => socket.emit('end-call', { id: $id })}>Finalizar</button
+    >
+  {/if}
 </div>
 
 <style>
@@ -157,6 +167,7 @@
     transform: rotateY(180deg);
     -webkit-transform: rotateY(180deg); /* Safari and Chrome */
     -moz-transform: rotateY(180deg); /* Firefox */
+    border-radius: 1rem;
   }
 
   .is-full {

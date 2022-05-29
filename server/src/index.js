@@ -57,6 +57,11 @@ io.on('connection', (socket) => {
   socket.on('create-answer', ({ id, answer }) => {
     socket.to(id).emit('answer-sent', { answer });
   });
+
+  socket.on('end-call', ({ id }) => {
+    io.to(id).emit('call-ended');
+    io.socketsLeave(id);
+  });
 });
 
 // eslint-disable-next-line no-console
