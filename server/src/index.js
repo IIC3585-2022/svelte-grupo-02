@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 8000;
 const httpServer = createServer();
 const io = new Server(httpServer, {
   cors: {
-    origin: '*',
+    origin: process.env.ORIGIN || 'http://localhost:3000/',
   },
 });
 
