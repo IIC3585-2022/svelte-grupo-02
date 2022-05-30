@@ -52,9 +52,6 @@
       remoteVideo.srcObject = remoteStream;
       localVideo.muted = true;
 
-      localVideo.play();
-      remoteVideo.play();
-
       ready = true;
     });
     socket.on('offer-sent', async ({ offer }) => {
@@ -150,11 +147,11 @@
   <div class="columns is-5">
     <div class="column is-1/2">
       <!-- svelte-ignore a11y-media-has-caption -->
-      <video bind:this={localVideo} />
+      <video bind:this={localVideo} autoplay />
     </div>
     <div class="column is-1/2">
       <!-- svelte-ignore a11y-media-has-caption -->
-      <video bind:this={remoteVideo} />
+      <video bind:this={remoteVideo} autoplay />
     </div>
   </div>
   {#if ready}
