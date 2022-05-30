@@ -2,7 +2,7 @@
 Aplicación de video chat hecha con Web Sockets y WebRTC.
 
 Se puede encontrar una versión en producción de ambas aplicaciones acá:
-- [Server](https://svelte-signaling-server.herokuapp.com/) (se recomienda promero abrir este link y esperar que el dyno prenda)
+- [Server](https://svelte-signaling-server.herokuapp.com/) (se recomienda primero abrir este link y esperar que el dyno prenda)
 - [Client](https://glittery-crepe-7170e4.netlify.app/)
 
 ## Setup
