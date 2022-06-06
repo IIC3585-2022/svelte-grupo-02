@@ -1,9 +1,17 @@
+const Koa = require('koa');
+const cors = require('@koa/cors');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
+const router = require('./router');
 
 const PORT = process.env.PORT || 8000;
 
-const httpServer = createServer();
+const app = new Koa();
+
+app.use(cors());
+app.use(router.routes());
+
+const httpServer = createServer(app.callback());
 const io = new Server(httpServer, {
   cors: {
     origin: '*',
