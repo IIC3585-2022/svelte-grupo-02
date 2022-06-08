@@ -29,4 +29,4 @@ y abre http://localhost:3000/
 
 ## Posibles errores
 
-Es probable que la primera vez que se intente conectar a llamada y se permita a la aplicación acceder al micrófono y a la cámara del computador, no se transmita el video. En las siguientes llamadas debería funcionar correctamente.
+Por configuraciones de la red que alguno de los pares esté usando, es probable que no se pueda concretar la conección P2P. La solución es usar agregar un TURN server a los servidores que configuran el RTCPeerConnection, sin embargo Google solo provee STUN servers gratuitos y no TURN.
