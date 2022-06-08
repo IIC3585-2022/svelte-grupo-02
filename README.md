@@ -32,3 +32,8 @@ y abre http://localhost:3000/
 Por configuraciones de la red que alguno de los pares esté usando, es probable que no se pueda concretar la conección P2P. La solución es usar agregar un TURN server a los servidores que configuran el RTCPeerConnection, sin embargo Google solo provee STUN servers gratuitos y no TURN.
 
 Sin embargo, igual se puede probar realizar una llamada de un computador a si mismo.
+
+## Material
+
+- [Documento WebRTC](https://webrtc.org/)
+- [Tutorial WebRTC](https://fireship.io/lessons/webrtc-firebase-video-chat/)
